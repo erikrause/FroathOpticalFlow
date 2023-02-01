@@ -1,0 +1,29 @@
+import torch
+
+from models.attunet import create_attunet
+from models.transunet import createTransUnet
+from models.unet import createUnet, createUnetPlusPlus
+
+"""
+     Returns Unet model.
+     Parameters:
+     Returns:
+      :torch.Model - model for training
+         """
+def createModel(model_name):
+  if model_name=='unet':
+    model = createUnet()
+  elif model_name=='unetplusplus':
+    model = createUnetPlusPlus()
+  elif model_name=='attunet':
+    model = create_attunet()
+  elif model_name=='transunet':
+    model = createTransUnet()
+  else:
+    raise ValueError('no such model')
+  return model
+
+
+def evalModel(weights_path):
+  model = torch.load(weights_path)
+  model.eval()
