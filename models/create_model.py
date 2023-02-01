@@ -25,5 +25,6 @@ def createModel(model_name):
 
 
 def evalModel(weights_path):
-  model = torch.load(weights_path)
+  model = torch.load(weights_path, map_location=torch.device('cpu'))
   model.eval()
+  return model

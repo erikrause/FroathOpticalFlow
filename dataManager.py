@@ -39,9 +39,10 @@ class DataManager(object):
         gray = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY)
         img = cv2.equalizeHist(gray)
         img = img/255.
-        img = np.reshape(img, img.shape + (1,))
+        img = img.reshape(1, 256, 256)
         return img, frame, source
 
+## TODO: fix for normal pytorch batches
     def get_frames_gen(self, batch_size=32, num=np.inf):
         """
           Batches generator for neural network input.
@@ -64,5 +65,6 @@ class DataManager(object):
                 sources.append(source)
                 counter += 1
             yield np.asarray(imgs), np.asarray(imgs_color), np.asarray(sources)
+            # yield img, img_color, source
         self.video.release()
 
