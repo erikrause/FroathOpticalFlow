@@ -21,7 +21,8 @@ class MaskPredictor(object):
     def compute_result(self, source, th=0.5):
         with torch.no_grad():
             a = self.model(torch.from_numpy(source).type(torch.FloatTensor) / 255)
-            pred = (a.cpu().detach().numpy()[0][0] > th).astype(np.uint8)
+            # pred = (a.cpu().detach().numpy()[0][0] > th).astype(np.uint8)
+            pred = (a.cpu().detach().numpy()[0][0] * 255).astype(np.uint8)
         return pred
 
     def get_mask_generator(self, videoGen):
@@ -34,6 +35,7 @@ class MaskPredictor(object):
             """
         for images in videoGen:
              for mask, frame, source in zip(self.compute_result(images[0]), images[1], images[2]):
+                print(np.max(mask), np.min(mask), mask)
                 yield mask, frame, source
 
 

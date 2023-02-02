@@ -1,6 +1,6 @@
 import torch
 
-from models.attunet import create_attunet
+from models.attunet import create_attunet, AttU_Net
 from models.transunet import createTransUnet
 from models.unet import createUnet, createUnetPlusPlus
 
@@ -26,5 +26,7 @@ def createModel(model_name):
 
 def evalModel(weights_path):
   model = torch.load(weights_path, map_location=torch.device('cpu'))
+  device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+  model.to(device)
   model.eval()
   return model

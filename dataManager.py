@@ -31,14 +31,9 @@ class DataManager(object):
         source = frame.copy()
         frame = cv2.GaussianBlur(frame, (11, 11), 0)
         frame = cv2.resize(frame, (256, 256))
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        h, s, v = cv2.split(hsv)
-        v = cv2.equalizeHist(v)
-        hsv = cv2.merge([h, s, v])
-        bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
-        gray = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         img = cv2.equalizeHist(gray)
-        img = img/255.
+        # img = img/255.
         img = img.reshape(1, 256, 256)
         return img, frame, source
 
@@ -65,6 +60,5 @@ class DataManager(object):
                 sources.append(source)
                 counter += 1
             yield np.asarray(imgs), np.asarray(imgs_color), np.asarray(sources)
-            # yield img, img_color, source
         self.video.release()
 
