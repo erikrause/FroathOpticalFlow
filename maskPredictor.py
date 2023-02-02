@@ -21,11 +21,12 @@ class MaskPredictor(object):
     def compute_result(self, source, th=0.5):
         with torch.no_grad():
             a = self.model(torch.from_numpy(source).type(torch.FloatTensor) / 255)
-            # pred = (a.cpu().detach().numpy()[0][0] > th).astype(np.uint8)
-            pred = (a.cpu().detach().numpy()[0][0] * 255).astype(np.uint8)
-        return pred
+            result = a.cpu().detach().numpy()
+            for i in range(result.shape[0]):
+                result[i][0] = (result[i][0] > th).astype(np.uint8)
+        return result
 
-    def get_mask_generator(self, videoGen):
+    def get_mask_generator(self, videoGen, th = 0.8):
         """
             Produces masks frames from input generator.
             Parameters:
@@ -34,8 +35,8 @@ class MaskPredictor(object):
                 :(np.ndarray, np.ndarray) - tuple of mask and source image
             """
         for images in videoGen:
-             for mask, frame, source in zip(self.compute_result(images[0]), images[1], images[2]):
-                print(np.max(mask), np.min(mask), mask)
-                yield mask, frame, source
+            masks = self.compute_result(images[0], th)
+            for  mask, frame, source in zip(masks, images[1], images[2]):
+                yield mask[0], frame, source
 
 
