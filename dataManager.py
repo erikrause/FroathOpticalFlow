@@ -30,12 +30,12 @@ class DataManager(object):
         import cv2
         source = frame.copy()
         frame = cv2.GaussianBlur(frame, (11, 11), 0)
-        frame = cv2.resize(frame, (256, 256))
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        img = cv2.equalizeHist(gray)
+        gray = cv2.equalizeHist(gray)
+        img = cv2.resize(gray, (256, 256))
         # img = img/255.
         img = img.reshape(1, 256, 256)
-        return img, frame, source
+        return img, gray, source
 
 ## TODO: fix for normal pytorch batches
     def get_frames_gen(self, batch_size=32, num=np.inf):
@@ -48,17 +48,17 @@ class DataManager(object):
         counter = 0
         while self.video.isOpened() and counter < num:
             imgs = []
-            imgs_color = []
+            imgs_gray = []
             sources = []
             for i in range(batch_size):
                 ret, img = self.video.read()
                 if not ret:
                     break
-                img, img_color, source = self.preprocessing(img)
-                imgs_color.append(img_color)
+                img, img_gray, source = self.preprocessing(img)
                 imgs.append(img)
+                imgs_gray.append(img_gray)
                 sources.append(source)
                 counter += 1
-            yield np.asarray(imgs), np.asarray(imgs_color), np.asarray(sources)
+            yield np.asarray(imgs), np.asarray(imgs_gray), np.asarray(sources)
         self.video.release()
 
