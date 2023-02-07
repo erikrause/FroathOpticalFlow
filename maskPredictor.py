@@ -26,7 +26,7 @@ class MaskPredictor(object):
                 result[i][0] = (result[i][0] > th).astype(np.uint8)
         return result
 
-    def get_mask_generator(self, videoGen, th = 0.8):
+    def get_mask_generator(self, videoGen, th = 0.7):
         """
             Produces masks frames from input generator.
             Parameters:
