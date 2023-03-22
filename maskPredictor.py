@@ -1,5 +1,4 @@
 import os
-
 import numpy as np
 import torch
 
@@ -7,7 +6,7 @@ from models.create_model import evalModel
 
 class MaskPredictor(object):
     """Class for generating masks from video"""
-    def __init__(self, pretrainedWeightsPath):
+    def __init__(self, pretrainedWeightsPath, net='unet'):
         """
         Constructor of mask generator.
         Parameters:
@@ -26,6 +25,7 @@ class MaskPredictor(object):
                 result[i][0] = (result[i][0] > th).astype(np.uint8)
         return result
 
+
     def get_mask_generator(self, videoGen, th = 0.7):
         """
             Produces masks frames from input generator.
@@ -39,4 +39,16 @@ class MaskPredictor(object):
             for  mask, frame, source in zip(masks, images[1], images[2]):
                 yield mask[0], frame, source
 
+    def get_mask_gt_generator(self, folderGen, th = 0.7):
+        """
+            Produces masks frames from input generator.
+            Parameters:
+                :videoGen (generator) - generator from video
+            Returns:
+                :(np.ndarray, np.ndarray) - tuple of mask and source image
+            """
+        for images in folderGen:
+            masks = self.compute_result(images[0], th)
+            for  mask, frame, source, gt in zip(masks, images[1], images[2], images[3]):
+                yield mask[0], frame, source, gt
 
