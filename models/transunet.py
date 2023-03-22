@@ -205,7 +205,7 @@ class DecoderBottleneck(nn.Module):
         return x
 
 
-class Encoder(nn.Module):
+class EncoderTrans(nn.Module):
     def __init__(self, img_dim, in_channels, out_channels, head_num, mlp_dim, block_num, patch_dim):
         super().__init__()
 
@@ -243,7 +243,7 @@ class Encoder(nn.Module):
         return x, x1, x2, x3
 
 
-class Decoder(nn.Module):
+class DecoderTrans(nn.Module):
     def __init__(self, out_channels, class_num):
         super().__init__()
 
@@ -268,10 +268,10 @@ class TransUNet(nn.Module):
     def __init__(self, img_dim, in_channels, out_channels, head_num, mlp_dim, block_num, patch_dim, class_num):
         super().__init__()
 
-        self.encoder = Encoder(img_dim, in_channels, out_channels,
-                               head_num, mlp_dim, block_num, patch_dim)
+        self.encoder = EncoderTrans(img_dim, in_channels, out_channels,
+                                    head_num, mlp_dim, block_num, patch_dim)
 
-        self.decoder = Decoder(out_channels, class_num)
+        self.decoder = DecoderTrans(out_channels, class_num)
 
     def forward(self, x):
         x, x1, x2, x3 = self.encoder(x)
