@@ -1,7 +1,6 @@
 import numpy as np
 SMOOTH = 1e-6
 def iou(outputs: np.array, labels: np.array):
-    outputs = outputs//255
     labels = labels//255
     intersection = (outputs & labels).sum()
     union = (outputs | labels).sum()
