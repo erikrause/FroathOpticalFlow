@@ -111,7 +111,7 @@ class FolderDataManager(object):
           """
         counter = 0
         if num is not None:
-            self.img_list = random.choices(self.img_list, k=num)
+            self.img_list = random.sample(self.img_list, num)
         while counter < len(self.img_list):
             imgs = []
             imgs_gray = []
