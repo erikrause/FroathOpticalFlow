@@ -1,8 +1,5 @@
 import numpy as np
 import cv2
-from skimage.feature import peak_local_max
-from skimage.segmentation import watershed
-from scipy import ndimage
 
 class NoMarkersError(Exception):
     pass
@@ -107,16 +104,21 @@ def crop(frame):
 
 
 def preprocessing(frame):
-    frame = frame.copy()
-    frame = cv2.GaussianBlur(frame, (15, 15), 0)
+    # frame = cv2.GaussianBlur(frame, (11, 11), 0)
+
+    shifted = cv2.pyrMeanShiftFiltering(frame, 21, 51)
 
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     h, s, v = cv2.split(hsv)
+
     v = cv2.equalizeHist(v)
+
     hsv = cv2.merge([h, s, v])
     bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
     gray = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY)
-    return bgr, gray
+
+    return bgr, gray, shifted
+
 
 def getSobel(v):
     scale = 1
@@ -130,82 +132,7 @@ def getSobel(v):
     abs_grad_x = cv2.convertScaleAbs(grad_x)
     abs_grad_y = cv2.convertScaleAbs(grad_y)
     maskSobel = cv2.addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0)
-    maskSobel = cv2.threshold(maskSobel, 150, 255, cv2.THRESH_BINARY)[1]
+    # maskSobel = cv2.threshold(maskSobel, 150, 255, cv2.THRESH_BINARY)[1]
 #     print('sobel')
 #     show(maskSobel)
     return maskSobel
-
-def findMarkers(v):
-    kernel = np.ones((9, 9), np.uint8)
-    v = cv2.morphologyEx(v, cv2.MORPH_OPEN, kernel)
-    v = cv2.cvtColor(v, cv2.COLOR_GRAY2BGR)
-    v = cv2.pyrMeanShiftFiltering(v, 11, 21)
-    v = cv2.cvtColor(v, cv2.COLOR_BGR2GRAY)
-    homo_filter = HomomorphicFilter(a = 0.75, b = 1.25)
-    v = homo_filter.filter(I=v, filter_params=[20,2])
-#     print('before markers')
-#     show(v)
-#     thresh = cv2.adaptiveThreshold(v, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 2)
-    thresh = cv2.threshold(v,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1]
-    kernel = np.ones((15, 15), np.uint8)
-    markers = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
-    markers = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
-#     print('markers')
-#     show(markers)
-    return thresh
-#     return markers
-
-def doWatershed(markers, maskSobel):
-    distance_map = ndimage.distance_transform_edt(markers)
-    local_max = peak_local_max(distance_map, indices=False, min_distance=10, labels=markers)
-#     print('local max')
-#     show(local_max)
-    # Perform connected component analysis then apply Watershed
-    markers = ndimage.label(local_max, structure=np.ones((3, 3)))[0]
-
-    labels = watershed(-distance_map, markers)#, mask=maskSobel)
-    return labels
-
-
-
-def findContours(gray, mode=3, returnContours=False):
-    markers = findMarkers(gray)
-    if np.all(np.count_nonzero(markers == 255) < 100000):
-        raise NoMarkersError
-    maskSobel = getSobel(gray)
-    # Iterate through unique labels
-    labels = doWatershed(markers, maskSobel)
-
-    black = np.zeros(gray.shape, np.uint8)
-
-    n = 0
-    Areas = []
-    contours = []
-    for label in np.unique(labels):
-        if label == 0:
-            continue
-        # Create a mask
-        mask = np.zeros(markers.shape, dtype="uint8")
-        mask[labels == label] = 255
-        # Find contours and determine contour area
-        cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        cnts = cnts[0] if len(cnts) == 2 else cnts[1]
-        c = max(cnts, key=cv2.contourArea)
-        contours.append(c)
-        area = cv2.contourArea(c)
-        if area > 10:
-            Areas.append(area)
-        n += 1
-        if mode == 0:
-            cv2.drawContours(black, [c], -1, (255, 255, 255), -1)
-        if mode == 1:
-            cv2.drawContours(black, [c], -1, (0, 0, 0), 1)
-        if mode == 2:
-            cv2.drawContours(black, [c], -1, (255, 255, 255), -1)
-            cv2.drawContours(black, [c], -1, (0, 0, 0), 2)
-        if mode == 3:
-            cv2.drawContours(gray, [c], -1, (0, 0, 0), 1)
-    if returnContours:
-        return contours
-    else:
-        return gray, black

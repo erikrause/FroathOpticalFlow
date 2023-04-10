@@ -1,4 +1,3 @@
-from watershed import findMarkers, getSobel, doWatershed, NoMarkersError
 import numpy as np
 import cv2
 
@@ -26,7 +25,7 @@ def get_mask(img1, img2):
     diff = (diff * 255).astype("uint8")
     thresh = cv2.threshold(diff, 220, 255, cv2.THRESH_BINARY_INV)[1]
     #     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (15,15))
-    kernel = np.ones((15, 15), np.uint8)
+    kernel = np.ones((30, 30), np.uint8)
     thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
 
     contours = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
