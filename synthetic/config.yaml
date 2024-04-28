@@ -1,0 +1,32 @@
+batch_size: 8
+learning_rate: 1.e-4
+n_epochs: 400
+log_interval: 1
+save_interval: 10
+weight_decay: 1.e-5
+train_random_crop_resolution: [256, 256]
+val_random_crop_resolution: [512, 960]  # костыль чтобы не добавлять padding для кратности 32-м
+test_reandom_crop_resolution: [512, 960]  # костыль чтобы не добавлять padding для кратности 32-м
+tensorboard_root: "tensorboard"
+
+train_roots:
+  colors:
+    - "synthetic/datasets/synthetic_rocks/frames/0/train"
+    - "synthetic/datasets/synthetic_rocks/frames/1/train"
+  segments:
+    - "synthetic/datasets/synthetic_rocks/segmentation/0/sequence.0-preprocessed/train"
+    - "synthetic/datasets/synthetic_rocks/segmentation/1/sequence.0-preprocessed/train"
+val_roots:
+  colors:
+    - "synthetic/datasets/synthetic_rocks/frames/0/valid"
+    - "synthetic/datasets/synthetic_rocks/frames/1/valid"
+  segments:
+    - "synthetic/datasets/synthetic_rocks/segmentation/0/sequence.0-preprocessed/valid"
+    - "synthetic/datasets/synthetic_rocks/segmentation/1/sequence.0-preprocessed/valid"
+test_roots:
+  colors:
+    - "synthetic/datasets/synthetic_rocks/frames/0/test"
+    - "synthetic/datasets/synthetic_rocks/frames/1/test"
+  segments:
+    - "synthetic/datasets/synthetic_rocks/segmentation/0/sequence.0-preprocessed/test"
+    - "synthetic/datasets/synthetic_rocks/segmentation/1/sequence.0-preprocessed/test"

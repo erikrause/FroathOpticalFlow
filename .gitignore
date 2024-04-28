@@ -3,3 +3,9 @@
 /weights/
 /.idea/
 /results/
+tensorboard
+inference_out
+datasets
+__pycache__
+checkpoints-*
+temp*
