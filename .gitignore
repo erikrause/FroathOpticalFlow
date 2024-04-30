@@ -4,7 +4,7 @@
 /.idea/
 /results/
 tensorboard
-inference_out
+inference_out*
 datasets
 __pycache__
 checkpoints-*

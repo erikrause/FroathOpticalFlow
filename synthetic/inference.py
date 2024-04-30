@@ -12,13 +12,13 @@ import numpy as np
 
 
 def _get_testloader(config):
-    valset = SyntheticRocks(color_roots=config["val_roots"]["colors"],
-                            segments_roots=config["val_roots"]["segments"],
-                            crop_resolution=config["val_random_crop_resolution"])
-    valloader = DataLoader(dataset=valset,
+    testset = SyntheticRocks(color_roots=config["test_roots"]["colors"],
+                            segments_roots=config["test_roots"]["segments"],
+                            crop_resolution=config["test_random_crop_resolution"])
+    testloader = DataLoader(dataset=testset,
                            batch_size=1,
                            shuffle=False)
-    return valloader
+    return testloader
 
 
 def inference(args):

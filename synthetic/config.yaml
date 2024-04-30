@@ -6,7 +6,7 @@ save_interval: 10
 weight_decay: 1.e-5
 train_random_crop_resolution: [256, 256]
 val_random_crop_resolution: [512, 960]  # костыль чтобы не добавлять padding для кратности 32-м
-test_reandom_crop_resolution: [512, 960]  # костыль чтобы не добавлять padding для кратности 32-м
+test_random_crop_resolution: [512, 960]  # костыль чтобы не добавлять padding для кратности 32-м
 tensorboard_root: "tensorboard"
 
 train_roots:
