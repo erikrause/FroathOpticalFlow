@@ -12,8 +12,8 @@ import numpy as np
 
 
 def _get_testloader(config):
-    testset = SyntheticRocks(color_roots=config["test_roots"]["colors"],
-                            segments_roots=config["test_roots"]["segments"],
+    testset = SyntheticRocks(color_roots=[config["test_roots"]["colors"][0]],
+                            segments_roots=[config["test_roots"]["segments"][0]],
                             crop_resolution=config["test_random_crop_resolution"])
     testloader = DataLoader(dataset=testset,
                            batch_size=1,
